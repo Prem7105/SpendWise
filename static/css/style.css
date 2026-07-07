@@ -1,0 +1,37 @@
+:root { --sw-primary: #4e73df; --sw-primary-dark: #224abe; }
+body { background: #f4f6fb; font-family: "Segoe UI", system-ui, Roboto, Arial, sans-serif; }
+
+.sidebar { width: 240px; min-height: 100vh; position: sticky; top: 0;
+    background: linear-gradient(180deg, var(--sw-primary) 0%, var(--sw-primary-dark) 100%);
+    transition: width .2s ease; }
+.sidebar .brand { font-weight: 700; font-size: 1.25rem; }
+.sidebar .nav-link { color: rgba(255,255,255,.85); border-radius: .6rem; margin-bottom: .25rem;
+    padding: .6rem .85rem; display: flex; align-items: center; gap: .65rem; font-weight: 500; }
+.sidebar .nav-link:hover { background: rgba(255,255,255,.15); color: #fff; }
+.sidebar .nav-link.active { background: rgba(255,255,255,.25); color: #fff; }
+.sidebar .nav-link i { font-size: 1.1rem; }
+
+.topbar { min-height: 62px; }
+.card { border: none; border-radius: 1rem; box-shadow: 0 .15rem 1rem rgba(58,59,69,.08); }
+.stat-card { color: #fff; border-radius: 1rem; overflow: hidden; }
+.stat-income  { background: linear-gradient(45deg,#1cc88a,#13855c); }
+.stat-expense { background: linear-gradient(45deg,#e74a3b,#a52a1e); }
+.stat-balance { background: linear-gradient(45deg,#4e73df,#224abe); }
+.stat-card .stat-icon { font-size: 2.2rem; opacity: .35; }
+.stat-card .stat-label { font-size: .75rem; letter-spacing: .5px; text-transform: uppercase; opacity: .9; }
+.amount-income { color: #1cc88a; font-weight: 600; }
+.amount-expense { color: #e74a3b; font-weight: 600; }
+
+.auth-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg,#4e73df 0%,#224abe 100%); }
+.auth-card { width: 100%; max-width: 420px; border-radius: 1rem; }
+.category-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+.table > :not(caption) > * > * { padding: .8rem 1rem; }
+.empty-state { padding: 3rem 1rem; text-align: center; color: #8a94a6; }
+.empty-state i { font-size: 3rem; opacity: .4; }
+
+@media (max-width: 768px) {
+    .sidebar { width: 66px; }
+    .sidebar .brand span, .sidebar .nav-link span { display: none; }
+    .sidebar .nav-link { justify-content: center; }
+}

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · SpendWise{% endblock %}
+{% block heading %}Dashboard{% endblock %}
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-md-4"><div class="card stat-card stat-income p-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <div><div class="stat-label">Total Income</div><h3 class="mb-0">{{ CURRENCY }}{{ total_income }}</h3></div>
+        <i class="bi bi-arrow-down-circle stat-icon"></i></div></div></div>
+    <div class="col-md-4"><div class="card stat-card stat-expense p-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <div><div class="stat-label">Total Expense</div><h3 class="mb-0">{{ CURRENCY }}{{ total_expense }}</h3></div>
+        <i class="bi bi-arrow-up-circle stat-icon"></i></div></div></div>
+    <div class="col-md-4"><div class="card stat-card stat-balance p-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <div><div class="stat-label">Balance</div><h3 class="mb-0">{{ CURRENCY }}{{ balance }}</h3></div>
+        <i class="bi bi-wallet2 stat-icon"></i></div></div></div>
+</div>
+
+{% if budget %}
+<div class="card p-3 mb-4">
+    <div class="d-flex justify-content-between small text-muted mb-1">
+    <span>This month's spending vs budget ({{ CURRENCY }}{{ budget }})</span><span>{{ budget_pct }}%</span></div>
+    <div class="progress" style="height:12px;">
+    <div class="progress-bar {% if budget_pct >= 100 %}bg-danger{% elif budget_pct >= 80 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ budget_pct }}%;"></div></div>
+</div>
+{% endif %}
+
+{% if not has_data %}
+    <div class="card"><div class="empty-state">
+    <i class="bi bi-piggy-bank d-block mb-2"></i><h5>No transactions yet</h5>
+    <p>Start by adding your first income or expense.</p>
+    <a href="{% url 'transaction_create' 'EXPENSE' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Expense</a>
+    <a href="{% url 'transaction_create' 'INCOME' %}" class="btn btn-success"><i class="bi bi-plus-lg"></i> Add Income</a>
+    </div></div>
+{% else %}
+<div class="row g-4">
+    <div class="col-lg-5"><div class="card p-3 h-100">
+    <h6 class="fw-semibold mb-3">Spending by Category</h6>
+    {% if cat_labels == "[]" %}<p class="text-muted small">No expenses recorded yet.</p>
+    {% else %}<canvas id="catChart" height="240"></canvas>{% endif %}
+    </div></div>
+    <div class="col-lg-7"><div class="card p-3 h-100">
+    <h6 class="fw-semibold mb-3">Income vs Expense (last 6 months)</h6>
+    <canvas id="trendChart" height="240"></canvas></div></div>
+    <div class="col-12"><div class="card p-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="fw-semibold mb-0">Recent Transactions</h6><a href="{% url 'expense' %}" class="small">View all</a></div>
+    <div class="table-responsive"><table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th>Date</th><th>Category</th><th>Note</th><th class="text-end">Amount</th></tr></thead>
+        <tbody>{% for t in recent %}<tr>
+        <td>{{ t.date }}</td><td>{{ t.category.name }}</td><td class="text-muted">{{ t.note|default:"—" }}</td>
+        <td class="text-end {% if t.type == 'INCOME' %}amount-income{% else %}amount-expense{% endif %}">
+            {% if t.type == 'INCOME' %}+{% else %}−{% endif %}{{ CURRENCY }}{{ t.amount }}</td>
+        </tr>{% endfor %}</tbody></table></div>
+    </div></div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if has_data %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    const catLabels = {{ cat_labels|safe }}, catValues = {{ cat_values|safe }}, catColors = {{ cat_colors|safe }};
+    const monthLabels = {{ month_labels|safe }}, incomeSeries = {{ income_series|safe }}, expenseSeries = {{ expense_series|safe }};
+    if (document.getElementById("catChart") && catLabels.length) {
+    new Chart(document.getElementById("catChart"), { type: "doughnut",
+        data: { labels: catLabels, datasets: [{ data: catValues, backgroundColor: catColors, borderWidth: 2 }] },
+        options: { plugins: { legend: { position: "bottom" } } } });
+    }
+    new Chart(document.getElementById("trendChart"), { type: "bar",
+    data: { labels: monthLabels, datasets: [
+        { label: "Income", data: incomeSeries, backgroundColor: "#1cc88a", borderRadius: 6 },
+        { label: "Expense", data: expenseSeries, backgroundColor: "#e74a3b", borderRadius: 6 }] },
+    options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { position: "bottom" } } } });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "auth_base.html" %}
+{% block title %}Login · SpendWise{% endblock %}
+{% block subtitle %}Welcome back! Please sign in.{% endblock %}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="alert alert-danger py-2">Invalid username or password.</div>{% endif %}
+    <div class="mb-3"><label class="form-label">Username</label>
+    <input type="text" name="username" class="form-control" required autofocus></div>
+    <div class="mb-3"><label class="form-label">Password</label>
+    <input type="password" name="password" class="form-control" required></div>
+    <button type="submit" class="btn btn-primary w-100 mb-3"><i class="bi bi-box-arrow-in-right"></i> Sign In</button>
+    <p class="text-center small mb-0">Don't have an account? <a href="{% url 'register' %}">Create one</a></p>
+</form>
+{% endblock %}

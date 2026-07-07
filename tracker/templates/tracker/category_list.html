@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Categories · SpendWise{% endblock %}
+{% block heading %}Categories{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4"><div class="card p-4">
+    <h6 class="fw-semibold mb-3">Add Category</h6>
+    <form method="post">{% csrf_token %}
+        {% for field in form %}<div class="mb-3">
+        <label class="form-label">{{ field.label }}</label>{{ field }}
+        {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+        </div>{% endfor %}
+        <button class="btn btn-primary w-100"><i class="bi bi-plus-lg"></i> Add</button></form>
+    </div></div>
+    <div class="col-lg-8"><div class="card p-3">
+    {% if categories %}
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-light"><tr><th>Color</th><th>Name</th><th>Type</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>{% for c in categories %}<tr>
+        <td><span class="category-dot" style="background: {{ c.color }}"></span></td>
+        <td>{{ c.name }}</td>
+        <td><span class="badge {% if c.type == 'INCOME' %}bg-success{% else %}bg-danger{% endif %}">{{ c.get_type_display }}</span></td>
+        <td class="text-end">
+            <a href="{% url 'category_update' c.id %}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+            <a href="{% url 'category_delete' c.id %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a></td>
+        </tr>{% endfor %}</tbody></table>
+    {% else %}<div class="empty-state"><i class="bi bi-tags d-block mb-2"></i><p>No categories yet. Add one using the form.</p></div>{% endif %}
+    </div></div>
+</div>
+{% endblock %}
