@@ -1,19 +1,131 @@
 {% extends "base.html" %}
+
 {% block title %}Profile · SpendWise{% endblock %}
-{% block heading %}Profile{% endblock %}
+
+{% block heading %}My Profile{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center"><div class="col-lg-6"><div class="card p-4">
-    <div class="text-center mb-4">
-    <div class="fs-1 text-primary"><i class="bi bi-person-circle"></i></div>
-    <h5 class="mb-0">{{ request.user.username }}</h5>
-    <p class="text-muted small">Member since {{ request.user.date_joined|date:"M Y" }}</p></div>
-    <form method="post">{% csrf_token %}
-    {% for field in form %}<div class="mb-3">
-        <label class="form-label">{{ field.label }}</label>{{ field }}
-        {% if field.name == 'currency' %}<div class="form-text small">Symbol shown across the app, e.g. ₹, $, €.</div>{% endif %}
-        {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
-    </div>{% endfor %}
-    <button class="btn btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button>
-    </form>
-</div></div></div>
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-7">
+
+        <div class="card border-0 shadow-sm">
+
+            <!-- Header -->
+
+            <div class="card-body text-center border-bottom py-5">
+
+                <div class="mb-3">
+
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10"
+                            style="width:110px;height:110px;">
+
+                        <i class="bi bi-person-fill text-primary display-4"></i>
+
+                    </div>
+
+                </div>
+
+                <h3 class="fw-bold mb-1">
+
+                    {{ request.user.username }}
+
+                </h3>
+
+                <p class="text-muted mb-1">
+
+                    {{ request.user.email|default:"No email added" }}
+
+                </p>
+
+                <small class="text-secondary">
+
+                    Member since {{ request.user.date_joined|date:"F Y" }}
+
+                </small>
+
+            </div>
+
+            <!-- Form -->
+
+            <div class="card-body p-5">
+
+                <form method="post" novalidate>
+
+                    {% csrf_token %}
+
+                    {% for field in form %}
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold">
+
+                            {{ field.label }}
+
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.name == "currency" %}
+
+                        <div class="form-text">
+
+                            Choose the currency symbol displayed throughout your dashboard
+                            (₹, $, €, £, etc.).
+
+                        </div>
+
+                        {% endif %}
+
+                        {% if field.help_text %}
+
+                        <div class="form-text">
+
+                            {{ field.help_text|safe }}
+
+                        </div>
+
+                        {% endif %}
+
+                        {% for error in field.errors %}
+
+                        <div class="text-danger small mt-2">
+
+                            <i class="bi bi-exclamation-circle-fill me-1"></i>
+
+                            {{ error }}
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% endfor %}
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-end gap-2">
+
+                        <button class="btn btn-primary px-4">
+
+                            <i class="bi bi-check-circle-fill me-2"></i>
+
+                            Save Changes
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

@@ -19,12 +19,12 @@ class DataIsolationTests(TestCase):
         self.yash_cat=Category.objects.create(user=self.yash,name="Food",type="EXPENSE")
         Transaction.objects.create(user=self.yash,category=self.yash_cat,type="EXPENSE",
                                     amount=Decimal("100"),date=date.today())
-    
+
     def test_prem_cannot_see_yashs_transaction(self):
         self.client.login(username="prem",password="123456")
         resp = self.client.get(reverse("expense"))
         self.assertEqual(resp.status_code,200)
-        self.assertNotContains(resp,"50")
+        self.assertNotContains(resp,"100.00")
     
     def test_prem_cannot_delete_yashs_transaction(self):
         self.client.login(username="prem",password="123456")

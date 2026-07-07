@@ -1,79 +1,139 @@
 {% extends "base.html" %}
 {% block title %}Dashboard · SpendWise{% endblock %}
 {% block heading %}Dashboard{% endblock %}
+
 {% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-lg-6">
+        <h2 class="fw-bold mb-1">Welcome back, {{ request.user.first_name|default:request.user.username }} 👋</h2>
+        <p class="text-muted mb-0">Here's an overview of your financial activity.</p>
+    </div>
+    <div class="col-lg-6">
+        <div class="d-flex gap-2 justify-content-lg-end flex-wrap mt-3 mt-lg-0">
+            <a href="{% url 'transaction_create' 'INCOME' %}" class="btn btn-success"><i class="bi bi-plus-circle me-2"></i>Add Income</a>
+            <a href="{% url 'transaction_create' 'EXPENSE' %}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>Add Expense</a>
+            <a href="{% url 'reports' %}" class="btn btn-outline-secondary"><i class="bi bi-bar-chart-line me-2"></i>Reports</a>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4 mb-4">
-    <div class="col-md-4"><div class="card stat-card stat-income p-3">
+<div class="col-md-4">
+<div class="card stat-card stat-income p-4">
     <div class="d-flex justify-content-between align-items-center">
-        <div><div class="stat-label">Total Income</div><h3 class="mb-0">{{ CURRENCY }}{{ total_income }}</h3></div>
-        <i class="bi bi-arrow-down-circle stat-icon"></i></div></div></div>
-    <div class="col-md-4"><div class="card stat-card stat-expense p-3">
+    <div><div class="stat-label">Total Income</div><h3 class="mb-0">{{ CURRENCY }}{{ total_income }}</h3></div>
+    <i class="bi bi-arrow-down-circle stat-icon"></i>
+    </div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card stat-card stat-expense p-4">
     <div class="d-flex justify-content-between align-items-center">
-        <div><div class="stat-label">Total Expense</div><h3 class="mb-0">{{ CURRENCY }}{{ total_expense }}</h3></div>
-        <i class="bi bi-arrow-up-circle stat-icon"></i></div></div></div>
-    <div class="col-md-4"><div class="card stat-card stat-balance p-3">
+    <div><div class="stat-label">Total Expense</div><h3 class="mb-0">{{ CURRENCY }}{{ total_expense }}</h3></div>
+    <i class="bi bi-arrow-up-circle stat-icon"></i>
+    </div>
+</div>
+</div>
+<div class="col-md-4">
+<div class="card stat-card stat-balance p-4">
     <div class="d-flex justify-content-between align-items-center">
-        <div><div class="stat-label">Balance</div><h3 class="mb-0">{{ CURRENCY }}{{ balance }}</h3></div>
-        <i class="bi bi-wallet2 stat-icon"></i></div></div></div>
+    <div><div class="stat-label">Available Balance</div><h3 class="mb-0">{{ CURRENCY }}{{ balance }}</h3></div>
+    <i class="bi bi-wallet2 stat-icon"></i>
+    </div>
+</div>
+</div>
 </div>
 
 {% if budget %}
-<div class="card p-3 mb-4">
-    <div class="d-flex justify-content-between small text-muted mb-1">
-    <span>This month's spending vs budget ({{ CURRENCY }}{{ budget }})</span><span>{{ budget_pct }}%</span></div>
-    <div class="progress" style="height:12px;">
-    <div class="progress-bar {% if budget_pct >= 100 %}bg-danger{% elif budget_pct >= 80 %}bg-warning{% else %}bg-success{% endif %}" style="width: {{ budget_pct }}%;"></div></div>
+<div class="card p-4 mb-4">
+<div class="d-flex justify-content-between align-items-center mb-2">
+<div>
+    <h5 class="fw-bold mb-1">Monthly Budget</h5>
+    <small class="text-muted">Budget: {{ CURRENCY }}{{ budget }}</small>
+</div>
+<span class="badge bg-primary rounded-pill px-3">{{ budget_pct }}%</span>
+</div>
+<div class="progress" style="height:12px;">
+<div class="progress-bar {% if budget_pct >= 100 %}bg-danger{% elif budget_pct >= 80 %}bg-warning{% else %}bg-success{% endif %}" style="width:{{ budget_pct }}%;"></div>
+</div>
 </div>
 {% endif %}
 
 {% if not has_data %}
-    <div class="card"><div class="empty-state">
-    <i class="bi bi-piggy-bank d-block mb-2"></i><h5>No transactions yet</h5>
-    <p>Start by adding your first income or expense.</p>
-    <a href="{% url 'transaction_create' 'EXPENSE' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Expense</a>
-    <a href="{% url 'transaction_create' 'INCOME' %}" class="btn btn-success"><i class="bi bi-plus-lg"></i> Add Income</a>
-    </div></div>
+<div class="card text-center p-5">
+<i class="bi bi-piggy-bank display-3 text-primary mb-3"></i>
+<h3 class="fw-bold">No Transactions Yet</h3>
+<p class="text-muted">Start tracking your finances by adding your first transaction.</p>
+<div class="d-flex justify-content-center gap-2">
+<a href="{% url 'transaction_create' 'INCOME' %}" class="btn btn-success">Add Income</a>
+<a href="{% url 'transaction_create' 'EXPENSE' %}" class="btn btn-primary">Add Expense</a>
+</div>
+</div>
 {% else %}
 <div class="row g-4">
-    <div class="col-lg-5"><div class="card p-3 h-100">
-    <h6 class="fw-semibold mb-3">Spending by Category</h6>
-    {% if cat_labels == "[]" %}<p class="text-muted small">No expenses recorded yet.</p>
-    {% else %}<canvas id="catChart" height="240"></canvas>{% endif %}
-    </div></div>
-    <div class="col-lg-7"><div class="card p-3 h-100">
-    <h6 class="fw-semibold mb-3">Income vs Expense (last 6 months)</h6>
-    <canvas id="trendChart" height="240"></canvas></div></div>
-    <div class="col-12"><div class="card p-3">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="fw-semibold mb-0">Recent Transactions</h6><a href="{% url 'expense' %}" class="small">View all</a></div>
-    <div class="table-responsive"><table class="table table-hover align-middle mb-0">
-        <thead class="table-light"><tr><th>Date</th><th>Category</th><th>Note</th><th class="text-end">Amount</th></tr></thead>
-        <tbody>{% for t in recent %}<tr>
-        <td>{{ t.date }}</td><td>{{ t.category.name }}</td><td class="text-muted">{{ t.note|default:"—" }}</td>
-        <td class="text-end {% if t.type == 'INCOME' %}amount-income{% else %}amount-expense{% endif %}">
-            {% if t.type == 'INCOME' %}+{% else %}−{% endif %}{{ CURRENCY }}{{ t.amount }}</td>
-        </tr>{% endfor %}</tbody></table></div>
-    </div></div>
+<div class="col-lg-5">
+<div class="card p-4 h-100">
+    <h5 class="fw-bold mb-3">Expense Distribution</h5>
+    {% if cat_labels == "[]" %}
+    <div class="empty-state">No expense data available.</div>
+    {% else %}
+    <canvas id="catChart" height="250"></canvas>
+    {% endif %}
+</div>
+</div>
+
+<div class="col-lg-7">
+<div class="card p-4 h-100">
+    <h5 class="fw-bold mb-3">Income vs Expense</h5>
+    <canvas id="trendChart" height="250"></canvas>
+</div>
+</div>
+
+<div class="col-12">
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h5 class="fw-bold mb-0">Recent Transactions</h5>
+        <small class="text-muted">Latest financial activity</small>
+    </div>
+    <a href="{% url 'expense' %}" class="btn btn-outline-primary btn-sm">View All</a>
+    </div>
+    <div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+        <tr><th>Date</th><th>Category</th><th>Note</th><th class="text-end">Amount</th></tr>
+        </thead>
+        <tbody>
+        {% for t in recent %}
+        <tr>
+            <td>{{ t.date }}</td>
+            <td><span class="category-dot me-2" style="background:{{ t.category.color }}"></span>{{ t.category.name }}</td>
+            <td class="text-muted">{{ t.note|default:"—" }}</td>
+            <td class="text-end {% if t.type == 'INCOME' %}amount-income{% else %}amount-expense{% endif %}">
+            {% if t.type == 'INCOME' %}+{% else %}-{% endif %}{{ CURRENCY }}{{ t.amount }}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
 </div>
 {% endif %}
 {% endblock %}
 
 {% block scripts %}
+{{ block.super }}
 {% if has_data %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    const catLabels = {{ cat_labels|safe }}, catValues = {{ cat_values|safe }}, catColors = {{ cat_colors|safe }};
-    const monthLabels = {{ month_labels|safe }}, incomeSeries = {{ income_series|safe }}, expenseSeries = {{ expense_series|safe }};
-    if (document.getElementById("catChart") && catLabels.length) {
-    new Chart(document.getElementById("catChart"), { type: "doughnut",
-        data: { labels: catLabels, datasets: [{ data: catValues, backgroundColor: catColors, borderWidth: 2 }] },
-        options: { plugins: { legend: { position: "bottom" } } } });
-    }
-    new Chart(document.getElementById("trendChart"), { type: "bar",
-    data: { labels: monthLabels, datasets: [
-        { label: "Income", data: incomeSeries, backgroundColor: "#1cc88a", borderRadius: 6 },
-        { label: "Expense", data: expenseSeries, backgroundColor: "#e74a3b", borderRadius: 6 }] },
-    options: { scales: { y: { beginAtZero: true } }, plugins: { legend: { position: "bottom" } } } });
+const catLabels={{ cat_labels|safe }},catValues={{ cat_values|safe }},catColors={{ cat_colors|safe }};
+const monthLabels={{ month_labels|safe }},incomeSeries={{ income_series|safe }},expenseSeries={{ expense_series|safe }};
+if(document.getElementById("catChart")&&catLabels.length){
+new Chart(catChart,{type:"doughnut",data:{labels:catLabels,datasets:[{data:catValues,backgroundColor:catColors,borderWidth:2}]},options:{plugins:{legend:{position:"bottom"}}}});
+}
+new Chart(trendChart,{type:"bar",data:{labels:monthLabels,datasets:[{label:"Income",data:incomeSeries,backgroundColor:"#10b981",borderRadius:8},{label:"Expense",data:expenseSeries,backgroundColor:"#ef4444",borderRadius:8}]},options:{responsive:true,plugins:{legend:{position:"bottom"}},scales:{y:{beginAtZero:true}}}});
 </script>
 {% endif %}
 {% endblock %}

@@ -1,13 +1,195 @@
 {% extends "base.html" %}
-{% block title %}Delete · SpendWise{% endblock %}
+
+{% block title %}Delete Transaction · SpendWise{% endblock %}
+
 {% block heading %}Delete Transaction{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center"><div class="col-lg-5"><div class="card p-4 text-center">
-    <div class="text-danger fs-1 mb-2"><i class="bi bi-exclamation-triangle"></i></div>
-    <h5>Delete this transaction?</h5>
-    <p class="text-muted">{{ txn.type|title }} of {{ CURRENCY }}{{ txn.amount }} in <strong>{{ txn.category.name }}</strong> on {{ txn.date }}. This cannot be undone.</p>
-    <form method="post" class="d-flex gap-2 justify-content-center">{% csrf_token %}
-    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</button>
-    <a href="{% if txn.type == 'INCOME' %}{% url 'income' %}{% else %}{% url 'expense' %}{% endif %}" class="btn btn-outline-secondary">Cancel</a></form>
-</div></div></div>
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-6 col-md-8">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body text-center p-5">
+
+                <!-- Icon -->
+
+                <div class="mb-4">
+
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10"
+                         style="width:90px;height:90px;">
+
+                        <i class="bi bi-trash3-fill text-danger fs-1"></i>
+
+                    </div>
+
+                </div>
+
+                <!-- Heading -->
+
+                <h3 class="fw-bold mb-3">
+
+                    Delete Transaction?
+
+                </h3>
+
+                <p class="text-muted mb-4">
+
+                    This action is permanent and cannot be undone.
+
+                </p>
+
+                <!-- Transaction Summary -->
+
+                <div class="card bg-light border-0 mb-4">
+
+                    <div class="card-body">
+
+                        <div class="row text-start g-3">
+
+                            <div class="col-6">
+
+                                <small class="text-muted d-block">
+
+                                    Transaction Type
+
+                                </small>
+
+                                <span class="fw-semibold">
+
+                                    {% if txn.type == "INCOME" %}
+
+                                    <span class="badge bg-success rounded-pill">
+
+                                        Income
+
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="badge bg-danger rounded-pill">
+
+                                        Expense
+
+                                    </span>
+
+                                    {% endif %}
+
+                                </span>
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <small class="text-muted d-block">
+
+                                    Amount
+
+                                </small>
+
+                                <span class="fw-bold {% if txn.type == 'INCOME' %}amount-income{% else %}amount-expense{% endif %}">
+
+                                    {{ CURRENCY }}{{ txn.amount }}
+
+                                </span>
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <small class="text-muted d-block">
+
+                                    Category
+
+                                </small>
+
+                                <span class="fw-semibold">
+
+                                    {{ txn.category.name }}
+
+                                </span>
+
+                            </div>
+
+                            <div class="col-6">
+
+                                <small class="text-muted d-block">
+
+                                    Date
+
+                                </small>
+
+                                <span class="fw-semibold">
+
+                                    {{ txn.date }}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Warning -->
+
+                <div class="alert alert-warning border-0 rounded-4 text-start mb-4">
+
+                    <div class="d-flex">
+
+                        <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+
+                        <div>
+
+                            Once deleted, this transaction cannot be recovered.
+                            Please confirm before continuing.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Buttons -->
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-center">
+
+                        <button type="submit"
+                                class="btn btn-danger px-4">
+
+                            <i class="bi bi-trash3-fill me-2"></i>
+
+                            Delete Transaction
+
+                        </button>
+
+                        <a href="{% if txn.type == 'INCOME' %}{% url 'income' %}{% else %}{% url 'expense' %}{% endif %}"
+                           class="btn btn-outline-secondary px-4">
+
+                            <i class="bi bi-arrow-left me-2"></i>
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

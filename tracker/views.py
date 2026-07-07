@@ -2,7 +2,6 @@ import csv
 import json
 from datetime import date
 
-from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -10,9 +9,8 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.utils import timezone
-from .models import Profile
 from .forms import RegisterForm,CategoryForm,TransactionForm,ProfileForm
-from .models import Category,Transaction
+from .models import Profile,Category,Transaction
 
 MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun",
                 "Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -33,7 +31,7 @@ def register(request):
             return redirect("dashboard")
     else:
         form = RegisterForm()
-    return render(request,"registeration/register.html",{"form",form})
+    return render(request,"registration/register.html",{"form":form})
 
 def _seed_starter_categories(user):
     defaults = [
@@ -134,7 +132,7 @@ def transaction_create(request,txn_type):
             txn.user=request.user
             txn.type=txn_type
             txn.save()
-            messages.success(request,f"{txn_type.title()} of {txn.amount} addded.")
+            messages.success(request,f"{txn_type.title()} of {txn.amount} added.")
             return redirect("income" if txn_type=="INCOME" else "expense")
     else:
         form=TransactionForm(user=request.user,txn_type=txn_type,
@@ -179,7 +177,7 @@ def category_list(request):
                 messages.error(request,"You already have a category with name and type")
             else:
                 cat.save()
-                messages.success(request,"Category addded")
+                messages.success(request,"Category added")
             return redirect("category_list")
     else:
         form=CategoryForm()
@@ -194,7 +192,7 @@ def category_update(request,pk):
         form=CategoryForm(request.POST,instance=cat)
         if form.is_valid():
             form.save()
-            messages.success(request,"Category update")
+            messages.success(request,"Category updated")
             return redirect("category_list")
     else:
         form=CategoryForm(instance=cat)
@@ -252,12 +250,12 @@ def export_csv(request):
     if request.GET.get("category"):
         qs=qs.filter(category_id=request.GET["category"])
 
-    response= HttpResponse(content_type="texts/csv")
+    response= HttpResponse(content_type="text/csv")
     response["content-disposition"]='attachment;filename="spendwise_transaction.csv"'
     writer = csv.writer(response)
     writer.writerow(["Date","Type","Category","Amount","Note"])
     for t in qs:
-        writer.writerow([t.date,t.type,t.category,t.amount,t.note])
+        writer.writerow([t.date,t.type,t.category.name,t.amount,t.note])
     return response
 
 # Profile

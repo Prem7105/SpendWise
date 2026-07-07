@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class Profile(models.Model):
     """Extra per-user settings on top of the built-in User."""
     user = models.OneToOneField(User,on_delete=models.CASCADE,related_name="profile")
-    currency = models.CharField(max_length=3,default="Rs")
+    currency = models.CharField(max_length=3,default="INR")
     monthly_budget = models.DecimalField(
         max_digits=10,decimal_places=2,null=True,blank=True)
     

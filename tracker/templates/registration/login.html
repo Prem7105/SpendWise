@@ -1,15 +1,105 @@
 {% extends "auth_base.html" %}
+
 {% block title %}Login · SpendWise{% endblock %}
-{% block subtitle %}Welcome back! Please sign in.{% endblock %}
+
+{% block subtitle %}
+Securely access your personal finance dashboard.
+{% endblock %}
+
 {% block content %}
-<form method="post">
+
+<form method="post" novalidate>
+
     {% csrf_token %}
-    {% if form.non_field_errors %}<div class="alert alert-danger py-2">Invalid username or password.</div>{% endif %}
-    <div class="mb-3"><label class="form-label">Username</label>
-    <input type="text" name="username" class="form-control" required autofocus></div>
-    <div class="mb-3"><label class="form-label">Password</label>
-    <input type="password" name="password" class="form-control" required></div>
-    <button type="submit" class="btn btn-primary w-100 mb-3"><i class="bi bi-box-arrow-in-right"></i> Sign In</button>
-    <p class="text-center small mb-0">Don't have an account? <a href="{% url 'register' %}">Create one</a></p>
+
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>Invalid username or password.</span>
+    </div>
+    {% endif %}
+
+    <div class="mb-4">
+
+        <label class="form-label fw-semibold">
+
+            Username
+
+        </label>
+
+        <div class="input-group">
+
+            <span class="input-group-text bg-white border-end-0">
+
+                <i class="bi bi-person"></i>
+
+            </span>
+
+            <input
+                type="text"
+                name="username"
+                class="form-control border-start-0"
+                placeholder="Enter your username"
+                autocomplete="username"
+                required
+                autofocus>
+
+        </div>
+
+    </div>
+
+    <div class="mb-4">
+
+        <label class="form-label fw-semibold">
+
+            Password
+
+        </label>
+
+        <div class="input-group">
+
+            <span class="input-group-text bg-white border-end-0">
+
+                <i class="bi bi-lock"></i>
+
+            </span>
+
+            <input
+                type="password"
+                name="password"
+                class="form-control border-start-0"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required>
+
+        </div>
+
+    </div>
+
+    <button class="btn btn-primary w-100 py-3 mb-4">
+
+        <i class="bi bi-box-arrow-in-right me-2"></i>
+
+        Sign In
+
+    </button>
+
+    <div class="text-center">
+
+        <small class="text-muted">
+
+            Don't have an account?
+
+            <a href="{% url 'register' %}" class="fw-semibold text-decoration-none">
+
+                Create one
+
+            </a>
+
+        </small>
+
+    </div>
+
 </form>
+
 {% endblock %}

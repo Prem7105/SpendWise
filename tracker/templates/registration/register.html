@@ -1,18 +1,79 @@
 {% extends "auth_base.html" %}
+
 {% block title %}Register · SpendWise{% endblock %}
-{% block subtitle %}Create your free account.{% endblock %}
+
+{% block subtitle %}
+Create your account and start managing your finances smarter.
+{% endblock %}
+
 {% block content %}
-<form method="post">
+
+<form method="post" novalidate>
+
     {% csrf_token %}
+
     {% for field in form %}
-    <div class="mb-3">
-        <label class="form-label">{{ field.label }}</label>
+
+    <div class="mb-4">
+
+        <label class="form-label fw-semibold">
+
+            {{ field.label }}
+
+        </label>
+
         {{ field }}
-        {% if field.help_text %}<div class="form-text small">{{ field.help_text|safe }}</div>{% endif %}
-        {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+
+        {% if field.help_text %}
+
+        <div class="form-text">
+
+            {{ field.help_text|safe }}
+
+        </div>
+
+        {% endif %}
+
+        {% for error in field.errors %}
+
+        <div class="text-danger small mt-1">
+
+            <i class="bi bi-exclamation-circle me-1"></i>
+
+            {{ error }}
+
+        </div>
+
+        {% endfor %}
+
     </div>
+
     {% endfor %}
-    <button type="submit" class="btn btn-primary w-100 mb-3"><i class="bi bi-person-plus"></i> Create Account</button>
-    <p class="text-center small mb-0">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+
+    <button type="submit" class="btn btn-primary w-100 py-3 mb-4">
+
+        <i class="bi bi-person-plus-fill me-2"></i>
+
+        Create Account
+
+    </button>
+
+    <div class="text-center">
+
+        <small class="text-muted">
+
+            Already have an account?
+
+            <a href="{% url 'login' %}" class="fw-semibold text-decoration-none">
+
+                Sign In
+
+            </a>
+
+        </small>
+
+    </div>
+
 </form>
+
 {% endblock %}

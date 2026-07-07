@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
             name='Profile',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('currency', models.CharField(default='Rs', max_length=3)),
+                ('currency', models.CharField(default='INR', max_length=3)),
                 ('monthly_budget', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True)),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='profile', to=settings.AUTH_USER_MODEL)),
             ],

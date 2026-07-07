@@ -1,16 +1,143 @@
 {% extends "base.html" %}
+
 {% block title %}{{ mode }} {{ txn_type|title }} · SpendWise{% endblock %}
+
 {% block heading %}{{ mode }} {{ txn_type|title }}{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center"><div class="col-lg-6"><div class="card p-4">
-    <form method="post">{% csrf_token %}
-    {% for field in form %}<div class="mb-3">
-        <label class="form-label">{{ field.label }}</label>{{ field }}
-        {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
-    </div>{% endfor %}
-    <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save</button>
-        <a href="{% if txn_type == 'INCOME' %}{% url 'income' %}{% else %}{% url 'expense' %}{% endif %}" class="btn btn-outline-secondary">Cancel</a></div>
-    </form>
-</div></div></div>
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-7 col-xl-6">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-5">
+
+                <!-- Header -->
+
+                <div class="text-center mb-5">
+
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle
+                    {% if txn_type == 'INCOME' %}
+                    bg-success bg-opacity-10
+                    {% else %}
+                    bg-primary bg-opacity-10
+                    {% endif %}"
+                    style="width:90px;height:90px;">
+
+                        {% if txn_type == "INCOME" %}
+
+                        <i class="bi bi-arrow-down-circle-fill display-5 text-success"></i>
+
+                        {% else %}
+
+                        <i class="bi bi-arrow-up-circle-fill display-5 text-primary"></i>
+
+                        {% endif %}
+
+                    </div>
+
+                    <h2 class="fw-bold mt-4 mb-2">
+
+                        {{ mode }} {{ txn_type|title }}
+
+                    </h2>
+
+                    <p class="text-muted mb-0">
+
+                        {% if txn_type == "INCOME" %}
+
+                        Record a new source of income to keep your finances up to date.
+
+                        {% else %}
+
+                        Record your expenses to better understand your spending habits.
+
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+                <!-- Form -->
+
+                <form method="post" novalidate>
+
+                    {% csrf_token %}
+
+                    {% for field in form %}
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold">
+
+                            {{ field.label }}
+
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+
+                        <div class="form-text">
+
+                            {{ field.help_text|safe }}
+
+                        </div>
+
+                        {% endif %}
+
+                        {% for error in field.errors %}
+
+                        <div class="text-danger small mt-2">
+
+                            <i class="bi bi-exclamation-circle-fill me-1"></i>
+
+                            {{ error }}
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% endfor %}
+
+                    <hr class="my-4">
+
+                    <!-- Buttons -->
+
+                    <div class="d-flex justify-content-end gap-2">
+
+                        <a href="{% if txn_type == 'INCOME' %}{% url 'income' %}{% else %}{% url 'expense' %}{% endif %}"
+                            class="btn btn-outline-secondary px-4">
+
+                            <i class="bi bi-arrow-left me-2"></i>
+
+                            Cancel
+
+                        </a>
+
+                        <button type="submit"
+                                class="btn {% if txn_type == 'INCOME' %}btn-success{% else %}btn-primary{% endif %} px-4">
+
+                            <i class="bi bi-check-circle-fill me-2"></i>
+
+                            Save Transaction
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}
