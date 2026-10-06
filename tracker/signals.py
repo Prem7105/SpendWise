@@ -5,10 +5,8 @@ from django.dispatch import receiver
 from .models import Profile
 
 @receiver(post_save, sender=User)
-def create_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_profile(sender, instance, **kwargs):
-    instance.profile.save()
+def ensure_profile(sender, instance, raw=False, using=None, **kwargs):
+    if raw:
+        return
+    # Login saves last_login too, including for older users without a profile.
+    Profile.objects.using(using).get_or_create(user=instance)

@@ -17,6 +17,25 @@ class RegisterForm(UserCreationForm):
 
 
 class CategoryForm(forms.ModelForm):
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user or (self.instance.user if self.instance.pk else None)
+        self.original_type = self.instance.type
+
+    def clean(self):
+        data = super().clean()
+        name, category_type = data.get("name"), data.get("type")
+        if self.user and name and category_type:
+            duplicates = Category.objects.filter(user=self.user, name=name, type=category_type)
+            if self.instance.pk:
+                duplicates = duplicates.exclude(pk=self.instance.pk)
+            if duplicates.exists():
+                self.add_error("name", "You already have a category with this name and type.")
+        if (self.instance.pk and category_type and category_type != self.original_type
+                and self.instance.transactions.exists()):
+            self.add_error("type", "Cannot change the type of a category with transactions.")
+        return data
+
     class Meta:
         model = Category
         fields = ["name","type","color"]

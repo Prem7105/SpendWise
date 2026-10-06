@@ -92,7 +92,7 @@ def dashboard(request):
         "total_income":total_income,"total_expense":total_expense,"balance":balance,
         "month_income":month_income,"month_expense":month_expense,"budget":budget,
         "budget_pct":budget_pct,
-        "recent":txns.select_related("category")[:8],"has_data":txns.exists(),
+        "recent":txns.select_related("category").order_by("-date", "-created_at")[:8],"has_data":txns.exists(),
         "cat_labels": json.dumps(cat_labels),"cat_values":json.dumps(cat_values),
         "cat_colors":json.dumps(cat_colors),"month_labels":json.dumps(month_labels),
         "income_series":json.dumps(income_series),"expense_series":json.dumps(expense_series),
@@ -169,18 +169,15 @@ def transaction_delete(request,pk):
 @login_required
 def category_list(request):
     if request.method=="POST":
-        form=CategoryForm(request.POST)
+        form=CategoryForm(request.POST, user=request.user)
         if form.is_valid():
             cat=form.save(commit=False)
             cat.user=request.user
-            if request.user.categories.filter(name=cat.name,type=cat.type).exists():
-                messages.error(request,"You already have a category with name and type")
-            else:
-                cat.save()
-                messages.success(request,"Category added")
+            cat.save()
+            messages.success(request,"Category added")
             return redirect("category_list")
     else:
-        form=CategoryForm()
+        form=CategoryForm(user=request.user)
     categories=request.user.categories.all()
     return render(request,"tracker/category_list.html",
                     {"categories":categories,"form":form})
@@ -262,7 +259,7 @@ def export_csv(request):
 
 @login_required
 def profile(request):
-    prof=request.user.profile
+    prof, _ = Profile.objects.get_or_create(user=request.user)
     if request.method=="POST":
         form=ProfileForm(request.POST,instance=prof)
         if form.is_valid():
