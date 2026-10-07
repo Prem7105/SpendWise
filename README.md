@@ -74,3 +74,20 @@ spendwise/
 
 Prem Yadav
 https://github.com/Prem7105
+
+---
+
+## Architecture
+
+The Django application handles browser requests through URL routing and views. Authentication scopes finance records to the signed-in user; models persist transactions and categories, and templates render the dashboard and reports.
+
+```mermaid
+flowchart LR
+  U[Browser] --> R[Django URL routes]
+  R --> V[Views and forms]
+  V --> A[Authentication and user scope]
+  V --> M[Finance models]
+  M --> D[(Database)]
+  V --> T[Templates and charts]
+  T --> U
+```
